@@ -1,0 +1,11 @@
+[
+  {
+    "name": "org.springframework.http.codec.support.DefaultServerCodecConfigurer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  }
+]
