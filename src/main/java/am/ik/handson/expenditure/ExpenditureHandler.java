@@ -36,12 +36,11 @@ public class ExpenditureHandler {
     Mono<ServerResponse> post(ServerRequest req) {
         return req.bodyToMono(Expenditure.class)
             .flatMap(expenditure -> expenditure.validate()
-                .leftMap(v -> new ErrorResponseBuilder().withStatus(BAD_REQUEST).withDetails(v).createErrorResponse())
+                .bimap(v -> new ErrorResponseBuilder().withStatus(BAD_REQUEST).withDetails(v).createErrorResponse(), this.expenditureRepository::save)
                 .fold(error -> ServerResponse.badRequest().syncBody(error),
-                    validated -> this.expenditureRepository.save(validated)
-                        .flatMap(created -> ServerResponse
-                            .created(UriComponentsBuilder.fromUri(req.uri()).path("/{expenditureId}").build(created.getExpenditureId()))
-                            .syncBody(created))));
+                    result -> result.flatMap(created -> ServerResponse
+                        .created(UriComponentsBuilder.fromUri(req.uri()).path("/{expenditureId}").build(created.getExpenditureId()))
+                        .syncBody(created))));
     }
 
     Mono<ServerResponse> get(ServerRequest req) {
