@@ -20,7 +20,7 @@ public class InMemoryExpenditureRepository implements ExpenditureRepository {
     }
 
     @Override
-    public Mono<Expenditure> findById(int expenditureId) {
+    public Mono<Expenditure> findById(Integer expenditureId) {
         return Mono.justOrEmpty(this.expenditures.stream()
             .filter(x -> Objects.equals(x.getExpenditureId(), expenditureId))
             .findFirst());
@@ -36,7 +36,7 @@ public class InMemoryExpenditureRepository implements ExpenditureRepository {
     }
 
     @Override
-    public Mono<Void> deleteById(int expenditureId) {
+    public Mono<Void> deleteById(Integer expenditureId) {
         return Mono.defer(() -> {
             this.expenditures.removeIf(x -> Objects.equals(x.getExpenditureId(), expenditureId));
             return Mono.empty();

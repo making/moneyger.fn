@@ -7,9 +7,9 @@ public interface ExpenditureRepository {
 
     Flux<Expenditure> findAll();
 
-    Mono<Expenditure> findById(int expenditureId);
+    Mono<Expenditure> findById(Integer expenditureId);
 
     Mono<Expenditure> save(Expenditure expenditure);
 
-    Mono<Void> deleteById(int expenditureId);
+    Mono<Void> deleteById(Integer expenditureId);
 }

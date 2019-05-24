@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Expenditure {
 
-    private int expenditureId;
+    private Integer expenditureId;
 
     private String expenditureName;
 
@@ -17,7 +17,7 @@ public class Expenditure {
     Expenditure() {
     }
 
-    Expenditure(int expenditureId, String expenditureName, int price, int quantity, LocalDate expenditureDate) {
+    Expenditure(Integer expenditureId, String expenditureName, int price, int quantity, LocalDate expenditureDate) {
         this.expenditureId = expenditureId;
         this.expenditureName = expenditureName;
         this.price = price;
@@ -25,11 +25,11 @@ public class Expenditure {
         this.expenditureDate = expenditureDate;
     }
 
-    public int getExpenditureId() {
+    public Integer getExpenditureId() {
         return expenditureId;
     }
 
-    public void setExpenditureId(int expenditureId) {
+    public void setExpenditureId(Integer expenditureId) {
         this.expenditureId = expenditureId;
     }
 
