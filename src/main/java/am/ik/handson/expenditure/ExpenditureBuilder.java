@@ -14,6 +14,17 @@ public class ExpenditureBuilder {
 
     private int quantity;
 
+    public ExpenditureBuilder() {
+    }
+
+    public ExpenditureBuilder(Expenditure expenditure) {
+        this.price = expenditure.getPrice();
+        this.expenditureDate = expenditure.getExpenditureDate();
+        this.expenditureId = expenditure.getExpenditureId();
+        this.expenditureName = expenditure.getExpenditureName();
+        this.quantity = expenditure.getQuantity();
+    }
+
     public Expenditure createExpenditure() {
         return new Expenditure(expenditureId, expenditureName, price, quantity, expenditureDate);
     }
