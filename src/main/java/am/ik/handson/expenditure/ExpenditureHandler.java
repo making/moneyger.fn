@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public class ExpenditureHandler {
@@ -34,12 +35,13 @@ public class ExpenditureHandler {
 
     Mono<ServerResponse> post(ServerRequest req) {
         return req.bodyToMono(Expenditure.class)
-            .flatMap(this.expenditureRepository::save)
-            .flatMap(expenditure -> ServerResponse
-                .created(UriComponentsBuilder.fromUri(req.uri())
-                    .path("/{expenditureId}")
-                    .build(expenditure.getExpenditureId()))
-                .syncBody(expenditure));
+            .flatMap(body -> body.validate()
+                .leftMap(v -> new ErrorResponseBuilder().withStatus(BAD_REQUEST).withDetails(v).createErrorResponse())
+                .fold(error -> ServerResponse.badRequest().syncBody(error),
+                    x -> this.expenditureRepository.save(body)
+                        .flatMap(expenditure -> ServerResponse
+                            .created(UriComponentsBuilder.fromUri(req.uri()).path("/{expenditureId}").build(expenditure.getExpenditureId()))
+                            .syncBody(expenditure))));
     }
 
     Mono<ServerResponse> get(ServerRequest req) {

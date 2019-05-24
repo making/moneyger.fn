@@ -1,5 +1,10 @@
 package am.ik.handson.expenditure;
 
+import am.ik.yavi.builder.ValidatorBuilder;
+import am.ik.yavi.core.ConstraintViolations;
+import am.ik.yavi.core.Validator;
+import am.ik.yavi.fn.Either;
+
 import java.time.LocalDate;
 
 public class Expenditure {
@@ -13,6 +18,14 @@ public class Expenditure {
     private int quantity;
 
     private LocalDate expenditureDate;
+    
+    private static Validator<Expenditure> validator = ValidatorBuilder.of(Expenditure.class)
+        .constraint(Expenditure::getExpenditureId, "expenditureId", c -> c.isNull())
+        .constraint(Expenditure::getExpenditureName, "expenditureName", c -> c.notEmpty().lessThan(255))
+        .constraint(Expenditure::getPrice, "price", c -> c.greaterThan(0))
+        .constraint(Expenditure::getQuantity, "quantity", c -> c.greaterThan(0))
+        .constraintOnObject(Expenditure::getExpenditureDate, "expenditureDate", c -> c.notNull())
+        .build();
 
     Expenditure() {
     }
@@ -63,6 +76,10 @@ public class Expenditure {
 
     public void setExpenditureDate(LocalDate expenditureDate) {
         this.expenditureDate = expenditureDate;
+    }
+
+    public Either<ConstraintViolations, Expenditure> validate() {
+        return validator.validateToEither(this);
     }
 
     @Override
