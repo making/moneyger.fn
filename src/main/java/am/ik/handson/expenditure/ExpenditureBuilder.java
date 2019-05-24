@@ -8,7 +8,7 @@ public class ExpenditureBuilder {
 
     private LocalDate expenditureDate;
 
-    private int expenditureId;
+    private Integer expenditureId;
 
     private String expenditureName;
 
@@ -28,7 +28,7 @@ public class ExpenditureBuilder {
         return this;
     }
 
-    public ExpenditureBuilder withExpenditureId(int expenditureId) {
+    public ExpenditureBuilder withExpenditureId(Integer expenditureId) {
         this.expenditureId = expenditureId;
         return this;
     }
