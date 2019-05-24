@@ -35,13 +35,13 @@ public class ExpenditureHandler {
 
     Mono<ServerResponse> post(ServerRequest req) {
         return req.bodyToMono(Expenditure.class)
-            .flatMap(body -> body.validate()
+            .flatMap(expenditure -> expenditure.validate()
                 .leftMap(v -> new ErrorResponseBuilder().withStatus(BAD_REQUEST).withDetails(v).createErrorResponse())
                 .fold(error -> ServerResponse.badRequest().syncBody(error),
-                    x -> this.expenditureRepository.save(body)
-                        .flatMap(expenditure -> ServerResponse
-                            .created(UriComponentsBuilder.fromUri(req.uri()).path("/{expenditureId}").build(expenditure.getExpenditureId()))
-                            .syncBody(expenditure))));
+                    validated -> this.expenditureRepository.save(validated)
+                        .flatMap(created -> ServerResponse
+                            .created(UriComponentsBuilder.fromUri(req.uri()).path("/{expenditureId}").build(created.getExpenditureId()))
+                            .syncBody(created))));
     }
 
     Mono<ServerResponse> get(ServerRequest req) {
