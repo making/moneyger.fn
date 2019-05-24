@@ -1,7 +1,10 @@
 package am.ik.handson.expenditure;
 
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+
 import java.time.LocalDate;
 
+@JsonPOJOBuilder(buildMethodName = "createExpenditure")
 public class ExpenditureBuilder {
 
     private int price;

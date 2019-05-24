@@ -29,9 +29,11 @@ public class InMemoryExpenditureRepository implements ExpenditureRepository {
     @Override
     public Mono<Expenditure> save(Expenditure expenditure) {
         return Mono.fromCallable(() -> {
-            expenditure.setExpenditureId(this.counter.getAndIncrement());
-            this.expenditures.add(expenditure);
-            return expenditure;
+            Expenditure created = new ExpenditureBuilder(expenditure)
+                .withExpenditureId(this.counter.getAndIncrement())
+                .createExpenditure();
+            this.expenditures.add(created);
+            return created;
         });
     }
 
