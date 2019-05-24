@@ -63,6 +63,7 @@ public class App {
     public static HandlerStrategies handlerStrategies() {
         return HandlerStrategies.empty()
             .codecs(configure -> {
+                configure.registerDefaults(true);
                 ServerCodecConfigurer.ServerDefaultCodecs defaults = configure
                     .defaultCodecs();
                 ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
@@ -71,6 +72,7 @@ public class App {
                 defaults.jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper));
                 defaults.jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper));
             })
+            .exceptionHandler(new ErrorResponseExceptionHandler())
             .build();
     }
 
