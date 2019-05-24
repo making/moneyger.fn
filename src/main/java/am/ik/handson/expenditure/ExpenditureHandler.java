@@ -20,10 +20,11 @@ public class ExpenditureHandler {
 
     public RouterFunction<ServerResponse> routes() {
         return RouterFunctions.route()
-            .GET("/expenditures", this::list)
-            .POST("/expenditures", this::post)
-            .GET("/expenditures/{expenditureId}", this::get)
-            .DELETE("/expenditures/{expenditureId}", this::delete)
+            .path("/expenditures", b -> b
+                .GET("/", this::list)
+                .POST("/", this::post)
+                .GET("/{expenditureId}", this::get)
+                .DELETE("/{expenditureId}", this::delete))
             .build();
     }
 
@@ -42,7 +43,7 @@ public class ExpenditureHandler {
     }
 
     Mono<ServerResponse> get(ServerRequest req) {
-        return this.expenditureRepository.findById(Integer.parseInt(req.pathVariable("expenditureId")))
+        return this.expenditureRepository.findById(Integer.valueOf(req.pathVariable("expenditureId")))
             .flatMap(expenditure -> ServerResponse.ok().syncBody(expenditure))
             .switchIfEmpty(ServerResponse.status(NOT_FOUND)
                 .syncBody(new ErrorResponseBuilder()
@@ -53,6 +54,6 @@ public class ExpenditureHandler {
 
     Mono<ServerResponse> delete(ServerRequest req) {
         return ServerResponse.noContent()
-            .build(this.expenditureRepository.deleteById(Integer.parseInt(req.pathVariable("expenditureId"))));
+            .build(this.expenditureRepository.deleteById(Integer.valueOf(req.pathVariable("expenditureId"))));
     }
 }
