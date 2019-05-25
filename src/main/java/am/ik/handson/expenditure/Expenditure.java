@@ -19,7 +19,7 @@ public class Expenditure {
 
     private final int quantity;
 
-    private LocalDate expenditureDate;
+    private final LocalDate expenditureDate;
 
     private static Validator<Expenditure> validator = ValidatorBuilder.of(Expenditure.class)
         .constraint(Expenditure::getExpenditureId, "expenditureId", c -> c.isNull())
