@@ -83,7 +83,7 @@ public class App {
     static void initializeDatabase(String name, DatabaseClient databaseClient) {
         if ("H2".equals(name)) {
             databaseClient.execute()
-                .sql("CREATE TABLE IF NOT EXISTS expenditure (expenditure_id INT PRIMARY KEY AUTO_INCREMENT, expenditure_name VARCHAR(255), price INT NOT NULL, quantity INT NOT NULL, " +
+                .sql("CREATE TABLE IF NOT EXISTS expenditure (expenditure_id INT PRIMARY KEY AUTO_INCREMENT, expenditure_name VARCHAR(255), unit_price INT NOT NULL, quantity INT NOT NULL, " +
                     "expenditure_date " +
                     "DATE " +
                     "NOT NULL DEFAULT CURRENT_DATE)")

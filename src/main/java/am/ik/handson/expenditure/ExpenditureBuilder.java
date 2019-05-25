@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @JsonPOJOBuilder(buildMethodName = "createExpenditure")
 public class ExpenditureBuilder {
 
-    private int price;
+    private int unitPrice;
 
     private LocalDate expenditureDate;
 
@@ -21,7 +21,7 @@ public class ExpenditureBuilder {
     }
 
     public ExpenditureBuilder(Expenditure expenditure) {
-        this.price = expenditure.getPrice();
+        this.unitPrice = expenditure.getUnitPrice();
         this.expenditureDate = expenditure.getExpenditureDate();
         this.expenditureId = expenditure.getExpenditureId();
         this.expenditureName = expenditure.getExpenditureName();
@@ -29,11 +29,11 @@ public class ExpenditureBuilder {
     }
 
     public Expenditure createExpenditure() {
-        return new Expenditure(expenditureId, expenditureName, price, quantity, expenditureDate);
+        return new Expenditure(expenditureId, expenditureName, unitPrice, quantity, expenditureDate);
     }
 
-    public ExpenditureBuilder withPrice(int price) {
-        this.price = price;
+    public ExpenditureBuilder withUnitPrice(int unitPrice) {
+        this.unitPrice = unitPrice;
         return this;
     }
 

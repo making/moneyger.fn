@@ -26,14 +26,14 @@ public class ExpenditureHandlerTest {
         new ExpenditureBuilder()
             .withExpenditureId(1)
             .withExpenditureName("本")
-            .withPrice(2000)
+            .withUnitPrice(2000)
             .withQuantity(1)
             .withExpenditureDate(LocalDate.of(2019, 4, 1))
             .createExpenditure(),
         new ExpenditureBuilder()
             .withExpenditureId(2)
             .withExpenditureName("コーヒー")
-            .withPrice(300)
+            .withUnitPrice(300)
             .withQuantity(2)
             .withExpenditureDate(LocalDate.of(2019, 4, 2))
             .createExpenditure());
@@ -66,13 +66,13 @@ public class ExpenditureHandlerTest {
 
                 assertThat(body.get(0).get("expenditureId").asInt()).isEqualTo(1);
                 assertThat(body.get(0).get("expenditureName").asText()).isEqualTo("本");
-                assertThat(body.get(0).get("price").asInt()).isEqualTo(2000);
+                assertThat(body.get(0).get("unitPrice").asInt()).isEqualTo(2000);
                 assertThat(body.get(0).get("quantity").asInt()).isEqualTo(1);
                 assertThat(body.get(0).get("expenditureDate").asText()).isEqualTo("2019-04-01");
 
                 assertThat(body.get(1).get("expenditureId").asInt()).isEqualTo(2);
                 assertThat(body.get(1).get("expenditureName").asText()).isEqualTo("コーヒー");
-                assertThat(body.get(1).get("price").asInt()).isEqualTo(300);
+                assertThat(body.get(1).get("unitPrice").asInt()).isEqualTo(300);
                 assertThat(body.get(1).get("quantity").asInt()).isEqualTo(2);
                 assertThat(body.get(1).get("expenditureDate").asText()).isEqualTo("2019-04-02");
             });
@@ -91,7 +91,7 @@ public class ExpenditureHandlerTest {
 
                 assertThat(body.get("expenditureId").asInt()).isEqualTo(1);
                 assertThat(body.get("expenditureName").asText()).isEqualTo("本");
-                assertThat(body.get("price").asInt()).isEqualTo(2000);
+                assertThat(body.get("unitPrice").asInt()).isEqualTo(2000);
                 assertThat(body.get("quantity").asInt()).isEqualTo(1);
                 assertThat(body.get("expenditureDate").asText()).isEqualTo("2019-04-01");
             });
@@ -118,7 +118,7 @@ public class ExpenditureHandlerTest {
     void post() {
         Expenditure expenditure = new ExpenditureBuilder()
             .withExpenditureName("ビール")
-            .withPrice(250)
+            .withUnitPrice(250)
             .withQuantity(1)
             .withExpenditureDate(LocalDate.of(2019, 4, 3))
             .createExpenditure();
@@ -137,7 +137,7 @@ public class ExpenditureHandlerTest {
 
                 assertThat(body.get("expenditureId").asInt()).isEqualTo(100);
                 assertThat(body.get("expenditureName").asText()).isEqualTo("ビール");
-                assertThat(body.get("price").asInt()).isEqualTo(250);
+                assertThat(body.get("unitPrice").asInt()).isEqualTo(250);
                 assertThat(body.get("quantity").asInt()).isEqualTo(1);
                 assertThat(body.get("expenditureDate").asText()).isEqualTo("2019-04-03");
             });
@@ -153,7 +153,7 @@ public class ExpenditureHandlerTest {
 
                 assertThat(body.get("expenditureId").asInt()).isEqualTo(100);
                 assertThat(body.get("expenditureName").asText()).isEqualTo("ビール");
-                assertThat(body.get("price").asInt()).isEqualTo(250);
+                assertThat(body.get("unitPrice").asInt()).isEqualTo(250);
                 assertThat(body.get("quantity").asInt()).isEqualTo(1);
                 assertThat(body.get("expenditureDate").asText()).isEqualTo("2019-04-03");
             });

@@ -15,7 +15,7 @@ public class Expenditure {
 
     private final String expenditureName;
 
-    private final int price;
+    private final int unitPrice;
 
     private final int quantity;
 
@@ -24,15 +24,15 @@ public class Expenditure {
     private static Validator<Expenditure> validator = ValidatorBuilder.of(Expenditure.class)
         .constraint(Expenditure::getExpenditureId, "expenditureId", c -> c.isNull())
         .constraint(Expenditure::getExpenditureName, "expenditureName", c -> c.notEmpty().lessThan(255))
-        .constraint(Expenditure::getPrice, "price", c -> c.greaterThan(0))
+        .constraint(Expenditure::getUnitPrice, "unitPrice", c -> c.greaterThan(0))
         .constraint(Expenditure::getQuantity, "quantity", c -> c.greaterThan(0))
         .constraintOnObject(Expenditure::getExpenditureDate, "expenditureDate", c -> c.notNull())
         .build();
 
-    Expenditure(Integer expenditureId, String expenditureName, int price, int quantity, LocalDate expenditureDate) {
+    Expenditure(Integer expenditureId, String expenditureName, int unitPrice, int quantity, LocalDate expenditureDate) {
         this.expenditureId = expenditureId;
         this.expenditureName = expenditureName;
-        this.price = price;
+        this.unitPrice = unitPrice;
         this.quantity = quantity;
         this.expenditureDate = expenditureDate;
     }
@@ -47,8 +47,8 @@ public class Expenditure {
     }
 
 
-    public int getPrice() {
-        return price;
+    public int getUnitPrice() {
+        return unitPrice;
     }
 
 
@@ -71,7 +71,7 @@ public class Expenditure {
         return "Expenditure{" +
             "expenditureId=" + expenditureId +
             ", expenditureName='" + expenditureName + '\'' +
-            ", price=" + price +
+            ", unitPrice=" + unitPrice +
             ", quantity=" + quantity +
             ", expenditureDate=" + expenditureDate +
             '}';
