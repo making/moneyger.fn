@@ -26,6 +26,7 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.netty.http.server.HttpServer;
 
+import java.net.URI;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -85,7 +86,10 @@ public class App {
     }
 
     static ConnectionFactory connectionFactory() {
-        return ConnectionFactories.get("r2dbc:h2:file:///./target/demo?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+        // postgresql://username:password@hostname:5432/dbname
+        String databaseUrl = Optional.ofNullable(System.getenv("DATABASE_URL")).orElse("h2:file:///./target/demo?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+        URI uri = URI.create(databaseUrl);
+        return ConnectionFactories.get("r2dbc:" + ("postgres".equals(uri.getScheme()) ? databaseUrl.replace("postgres", "postgresql") : databaseUrl));
     }
 
     static void initializeDatabase(String name, DatabaseClient databaseClient) {
@@ -97,7 +101,16 @@ public class App {
                 .then(databaseClient.execute()
                     .sql("CREATE TABLE IF NOT EXISTS income (income_id INT PRIMARY KEY AUTO_INCREMENT, income_name VARCHAR(255), amount INT NOT NULL, income_date DATE NOT NULL DEFAULT CURRENT_DATE)")
                     .then())
-                .block();
+                .subscribe();
+        } else if ("PostgreSQL".equals(name)) {
+            databaseClient.execute()
+                .sql("CREATE TABLE IF NOT EXISTS expenditure (expenditure_id SERIAL PRIMARY KEY, expenditure_name VARCHAR(255), unit_price INT NOT NULL, quantity INT NOT NULL, " +
+                    "expenditure_date DATE NOT NULL DEFAULT CURRENT_DATE)")
+                .then()
+                .then(databaseClient.execute()
+                    .sql("CREATE TABLE IF NOT EXISTS income (income_id SERIAL PRIMARY KEY, income_name VARCHAR(255), amount INT NOT NULL, income_date DATE NOT NULL DEFAULT CURRENT_DATE)")
+                    .then())
+                .subscribe();
         }
     }
 }
