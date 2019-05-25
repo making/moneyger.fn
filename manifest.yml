@@ -1,0 +1,13 @@
+applications:
+  - name: moneyger
+    path: target/moneyger-1.0-SNAPSHOT.jar
+    memory: 128m
+    env:
+      JAVA_OPTS: '-XX:ReservedCodeCacheSize=22M -XX:MaxDirectMemorySize=22M -XX:MaxMetaspaceSize=54M -Xss512K'
+      JBP_CONFIG_OPEN_JDK_JRE: '[memory_calculator: {stack_threads: 30}]'
+    services:
+      # cf create-service elephantsql turtle moneyger-db
+      - moneyger-db
+    health-check-type: http
+    health-check-http-endpoint: /
+    timeout: 10
