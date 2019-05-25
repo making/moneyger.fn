@@ -115,7 +115,7 @@ public class ExpenditureHandlerTest {
     }
 
     @Test
-    void post() {
+    void post_201() {
         Expenditure expenditure = new ExpenditureBuilder()
             .withExpenditureName("ビール")
             .withUnitPrice(250)
@@ -156,6 +156,37 @@ public class ExpenditureHandlerTest {
                 assertThat(body.get("unitPrice").asInt()).isEqualTo(250);
                 assertThat(body.get("quantity").asInt()).isEqualTo(1);
                 assertThat(body.get("expenditureDate").asText()).isEqualTo("2019-04-03");
+            });
+    }
+
+    @Test
+    void post_400() {
+        Expenditure expenditure = new ExpenditureBuilder()
+            .withExpenditureId(1000)
+            .withExpenditureName("")
+            .withUnitPrice(-1)
+            .withQuantity(-1)
+            .withExpenditureDate(null)
+            .createExpenditure();
+
+        this.testClient.post()
+            .uri("/expenditures")
+            .syncBody(expenditure)
+            .exchange()
+            .expectStatus().isBadRequest()
+            .expectBody(JsonNode.class)
+            .consumeWith(result -> {
+                JsonNode body = result.getResponseBody();
+                assertThat(body).isNotNull();
+
+                assertThat(body.get("status").asInt()).isEqualTo(400);
+                assertThat(body.get("error").asText()).isEqualTo("Bad Request");
+                assertThat(body.get("details").size()).isEqualTo(5);
+                assertThat(body.get("details").get("expenditureId").get(0).asText()).isEqualTo("\"expenditureId\" must be null");
+                assertThat(body.get("details").get("expenditureName").get(0).asText()).isEqualTo("\"expenditureName\" must not be empty");
+                assertThat(body.get("details").get("unitPrice").get(0).asText()).isEqualTo("\"unitPrice\" must be greater than 0");
+                assertThat(body.get("details").get("quantity").get(0).asText()).isEqualTo("\"quantity\" must be greater than 0");
+                assertThat(body.get("details").get("expenditureDate").get(0).asText()).isEqualTo("\"expenditureDate\" must not be null");
             });
     }
 

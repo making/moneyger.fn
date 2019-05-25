@@ -1,6 +1,8 @@
 package am.ik.handson.income;
 
 import am.ik.handson.App;
+import am.ik.handson.expenditure.Expenditure;
+import am.ik.handson.expenditure.ExpenditureBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,7 +112,7 @@ public class IncomeHandlerTest {
     }
 
     @Test
-    void post() {
+    void post_201() {
         Income income = new IncomeBuilder()
             .withIncomeName("臨時収入")
             .withAmount(250000)
@@ -148,6 +150,35 @@ public class IncomeHandlerTest {
                 assertThat(body.get("incomeName").asText()).isEqualTo("臨時収入");
                 assertThat(body.get("amount").asInt()).isEqualTo(250000);
                 assertThat(body.get("incomeDate").asText()).isEqualTo("2019-04-28");
+            });
+    }
+
+    @Test
+    void post_400() {
+        Income income = new IncomeBuilder()
+            .withIncomeId(1000)
+            .withIncomeName("")
+            .withAmount(-1)
+            .withIncomeDate(null)
+            .createIncome();
+
+        this.testClient.post()
+            .uri("/incomes")
+            .syncBody(income)
+            .exchange()
+            .expectStatus().isBadRequest()
+            .expectBody(JsonNode.class)
+            .consumeWith(result -> {
+                JsonNode body = result.getResponseBody();
+                assertThat(body).isNotNull();
+
+                assertThat(body.get("status").asInt()).isEqualTo(400);
+                assertThat(body.get("error").asText()).isEqualTo("Bad Request");
+                assertThat(body.get("details").size()).isEqualTo(4);
+                assertThat(body.get("details").get("incomeId").get(0).asText()).isEqualTo("\"incomeId\" must be null");
+                assertThat(body.get("details").get("incomeName").get(0).asText()).isEqualTo("\"incomeName\" must not be empty");
+                assertThat(body.get("details").get("amount").get(0).asText()).isEqualTo("\"amount\" must be greater than 0");
+                assertThat(body.get("details").get("incomeDate").get(0).asText()).isEqualTo("\"incomeDate\" must not be null");
             });
     }
 
