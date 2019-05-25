@@ -7,6 +7,8 @@ import am.ik.handson.income.IncomeHandler;
 import am.ik.handson.income.R2dbcIncomeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
+import io.r2dbc.pool.ConnectionPool;
+import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 import org.slf4j.LoggerFactory;
@@ -49,7 +51,7 @@ public class App {
     }
 
     static RouterFunction<ServerResponse> routes() {
-        final ConnectionFactory connectionFactory = connectionFactory();
+        final ConnectionFactory connectionFactory = connectionPool(connectionFactory());
         final DatabaseClient databaseClient = DatabaseClient.builder()
             .connectionFactory(connectionFactory)
             .build();
@@ -90,6 +92,14 @@ public class App {
         String databaseUrl = Optional.ofNullable(System.getenv("DATABASE_URL")).orElse("h2:file:///./target/demo?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
         URI uri = URI.create(databaseUrl);
         return ConnectionFactories.get("r2dbc:" + ("postgres".equals(uri.getScheme()) ? databaseUrl.replace("postgres", "postgresql") : databaseUrl));
+    }
+
+    static ConnectionPool connectionPool(ConnectionFactory connectionFactory) {
+        return new ConnectionPool(ConnectionPoolConfiguration.builder(connectionFactory)
+            .maxSize(4)
+            .maxIdleTime(Duration.ofSeconds(3))
+            .validationQuery("SELECT 1")
+            .build());
     }
 
     static void initializeDatabase(String name, DatabaseClient databaseClient) {
