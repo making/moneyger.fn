@@ -7,7 +7,8 @@ applications:
       JBP_CONFIG_OPEN_JDK_JRE: '[memory_calculator: {stack_threads: 30}]'
     services:
       # cf create-service elephantsql turtle moneyger-db
+      # cf create-user-provided-service moneyger-db -p '{"uri":"postgres://username:password@hostname:5432/dbnane"}'
       - moneyger-db
     health-check-type: http
     health-check-http-endpoint: /
-    timeout: 10
+    timeout: 30
