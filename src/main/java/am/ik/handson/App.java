@@ -3,13 +3,14 @@ package am.ik.handson;
 import am.ik.handson.error.ErrorResponseExceptionHandler;
 import am.ik.handson.expenditure.ExpenditureHandler;
 import am.ik.handson.expenditure.R2dbcExpenditureRepository;
-import am.ik.handson.hello.HelloHandler;
-import am.ik.handson.message.MessageHandler;
+import am.ik.handson.income.IncomeHandler;
+import am.ik.handson.income.R2dbcIncomeRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.r2dbc.connectionfactory.R2dbcTransactionManager;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -27,6 +28,8 @@ import reactor.netty.http.server.HttpServer;
 
 import java.time.Duration;
 import java.util.Optional;
+
+import static org.springframework.web.reactive.function.server.RouterFunctions.resources;
 
 public class App {
 
@@ -55,9 +58,9 @@ public class App {
 
         initializeDatabase(connectionFactory.getMetadata().getName(), databaseClient);
 
-        return new HelloHandler().routes()
+        return resources("/**", new ClassPathResource("META-INF/resources/"))
             .and(new ExpenditureHandler(new R2dbcExpenditureRepository(databaseClient, transactionalOperator)).routes())
-            .and(new MessageHandler().routes());
+            .and(new IncomeHandler(new R2dbcIncomeRepository(databaseClient, transactionalOperator)).routes());
     }
 
     public static HandlerStrategies handlerStrategies() {
@@ -84,10 +87,11 @@ public class App {
         if ("H2".equals(name)) {
             databaseClient.execute()
                 .sql("CREATE TABLE IF NOT EXISTS expenditure (expenditure_id INT PRIMARY KEY AUTO_INCREMENT, expenditure_name VARCHAR(255), unit_price INT NOT NULL, quantity INT NOT NULL, " +
-                    "expenditure_date " +
-                    "DATE " +
-                    "NOT NULL DEFAULT CURRENT_DATE)")
+                    "expenditure_date DATE NOT NULL DEFAULT CURRENT_DATE)")
                 .then()
+                .then(databaseClient.execute()
+                    .sql("CREATE TABLE IF NOT EXISTS income (income_id INT PRIMARY KEY AUTO_INCREMENT, income_name VARCHAR(255), amount INT NOT NULL, income_date DATE NOT NULL DEFAULT CURRENT_DATE)")
+                    .then())
                 .block();
         }
     }
