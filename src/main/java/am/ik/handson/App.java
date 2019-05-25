@@ -29,8 +29,6 @@ import reactor.netty.http.server.HttpServer;
 import java.time.Duration;
 import java.util.Optional;
 
-import static org.springframework.web.reactive.function.server.RouterFunctions.resources;
-
 public class App {
 
     public static void main(String[] args) throws Exception {
@@ -58,9 +56,16 @@ public class App {
 
         initializeDatabase(connectionFactory.getMetadata().getName(), databaseClient);
 
-        return resources("/**", new ClassPathResource("META-INF/resources/"))
+        return staticRoutes()
             .and(new ExpenditureHandler(new R2dbcExpenditureRepository(databaseClient, transactionalOperator)).routes())
             .and(new IncomeHandler(new R2dbcIncomeRepository(databaseClient, transactionalOperator)).routes());
+    }
+
+    static RouterFunction<ServerResponse> staticRoutes() {
+        return RouterFunctions.route()
+            .GET("/", req -> ServerResponse.ok().syncBody(new ClassPathResource("META-INF/resources/index.html")))
+            .resources("/**", new ClassPathResource("META-INF/resources/"))
+            .build();
     }
 
     public static HandlerStrategies handlerStrategies() {
