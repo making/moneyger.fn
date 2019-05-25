@@ -1,25 +1,24 @@
 package am.ik.handson.hello;
 
-import am.ik.handson.hello.HelloHandler;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 public class HelloHandlerTest {
-	private WebTestClient testClient;
 
-	@Before
-	public void setUp() throws Exception {
-		this.testClient = WebTestClient.bindToRouterFunction(new HelloHandler().routes())
-				.build();
-	}
+    private WebTestClient testClient;
 
-	@Test
-	public void testHello() throws Exception {
-		this.testClient.get().uri("/") //
-				.exchange() //
-				.expectStatus().isOk() //
-				.expectBody(String.class).isEqualTo("Hello World!");
-	}
+    @BeforeAll
+    void setUp() throws Exception {
+        this.testClient = WebTestClient.bindToRouterFunction(new HelloHandler().routes())
+            .build();
+    }
+
+    @Test
+    void testHello() throws Exception {
+        this.testClient.get().uri("/") //
+            .exchange() //
+            .expectStatus().isOk() //
+            .expectBody(String.class).isEqualTo("Hello World!");
+    }
 }
