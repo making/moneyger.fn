@@ -2,13 +2,16 @@ package am.ik.handson.error;
 
 import am.ik.yavi.core.ConstraintViolations;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class ErrorResponseBuilder {
 
-    private List<ErrorResponse.Detail> details;
+    private Map<String, List<String>> details;
 
     private String error;
 
@@ -20,15 +23,15 @@ public class ErrorResponseBuilder {
         return new ErrorResponse(status, error, message, details);
     }
 
-    public ErrorResponseBuilder withDetails(List<ErrorResponse.Detail> details) {
+    public ErrorResponseBuilder withDetails(Map<String, List<String>> details) {
         this.details = details;
         return this;
     }
 
     public ErrorResponseBuilder withDetails(ConstraintViolations violations) {
-        this.details = violations.details().stream()
-            .map(d -> new ErrorResponse.Detail((String) d.getArgs()[0], d.getDefaultMessage()))
-            .collect(Collectors.toList());
+        MultiValueMap<String, String> details = new LinkedMultiValueMap<>();
+        violations.details().forEach(d -> details.add((String) d.getArgs()[0], d.getDefaultMessage()));
+        this.details = Collections.unmodifiableMap(details);
         return this;
     }
 

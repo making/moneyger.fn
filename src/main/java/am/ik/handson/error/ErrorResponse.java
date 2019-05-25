@@ -3,6 +3,7 @@ package am.ik.handson.error;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
+import java.util.Map;
 
 public class ErrorResponse {
 
@@ -14,9 +15,9 @@ public class ErrorResponse {
     private final String message;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private final List<Detail> details;
+    private final Map<String, List<String>> details;
 
-    public ErrorResponse(int status, String error, String message, List<Detail> details) {
+    public ErrorResponse(int status, String error, String message, Map<String, List<String>> details) {
         this.status = status;
         this.error = error;
         this.message = message;
@@ -35,27 +36,7 @@ public class ErrorResponse {
         return message;
     }
 
-    public List<Detail> getDetails() {
+    public Map<String, List<String>> getDetails() {
         return details;
-    }
-
-    public static class Detail {
-
-        private final String field;
-
-        private final String message;
-
-        public Detail(String field, String message) {
-            this.field = field;
-            this.message = message;
-        }
-
-        public String getField() {
-            return field;
-        }
-
-        public String getMessage() {
-            return message;
-        }
     }
 }
