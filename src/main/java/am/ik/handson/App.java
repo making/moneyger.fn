@@ -90,8 +90,12 @@ public class App {
     static ConnectionFactory connectionFactory() {
         // postgresql://username:password@hostname:5432/dbname
         String databaseUrl = Optional.ofNullable(System.getenv("DATABASE_URL")).orElse("h2:file:///./target/demo?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+        return ConnectionFactories.get("r2dbc:" + url(databaseUrl));
+    }
+
+    static String url(String databaseUrl) {
         URI uri = URI.create(databaseUrl);
-        return ConnectionFactories.get("r2dbc:" + ("postgres".equals(uri.getScheme()) ? databaseUrl.replace("postgres", "postgresql") : databaseUrl));
+        return ("postgres".equals(uri.getScheme()) ? databaseUrl.replace("postgres", "postgresql") : databaseUrl);
     }
 
     static ConnectionPool connectionPool(ConnectionFactory connectionFactory) {
