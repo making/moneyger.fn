@@ -46,11 +46,11 @@ public class ExpenditureHandler {
     Mono<ServerResponse> get(ServerRequest req) {
         return this.expenditureRepository.findById(Integer.valueOf(req.pathVariable("expenditureId")))
             .flatMap(expenditure -> ServerResponse.ok().syncBody(expenditure))
-            .switchIfEmpty(ServerResponse.status(NOT_FOUND)
+            .switchIfEmpty(Mono.defer(() -> ServerResponse.status(NOT_FOUND)
                 .syncBody(new ErrorResponseBuilder()
                     .withMessage("The given expenditure is not found.")
                     .withStatus(NOT_FOUND)
-                    .createErrorResponse()));
+                    .createErrorResponse())));
     }
 
     Mono<ServerResponse> delete(ServerRequest req) {
