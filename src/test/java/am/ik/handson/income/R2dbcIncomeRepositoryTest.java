@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class R2dbcIncomeRepositoryTest {
+class R2dbcIncomeRepositoryTest {
 
     R2dbcIncomeRepository incomeRepository;
 

@@ -1,8 +1,6 @@
 package am.ik.handson.income;
 
 import am.ik.handson.App;
-import am.ik.handson.expenditure.Expenditure;
-import am.ik.handson.expenditure.ExpenditureBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class IncomeHandlerTest {
+class IncomeHandlerTest {
 
     private WebTestClient testClient;
 

@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ExpenditureHandlerTest {
+class ExpenditureHandlerTest {
 
     private WebTestClient testClient;
 
