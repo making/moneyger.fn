@@ -23,7 +23,7 @@ public class Expenditure {
 
     private static Validator<Expenditure> validator = ValidatorBuilder.of(Expenditure.class)
         .constraint(Expenditure::getExpenditureId, "expenditureId", c -> c.isNull())
-        .constraint(Expenditure::getExpenditureName, "expenditureName", c -> c.notEmpty().lessThan(255))
+        .constraint(Expenditure::getExpenditureName, "expenditureName", c -> c.notEmpty().lessThanOrEqual(255))
         .constraint(Expenditure::getUnitPrice, "unitPrice", c -> c.greaterThan(0))
         .constraint(Expenditure::getQuantity, "quantity", c -> c.greaterThan(0))
         .constraintOnObject(Expenditure::getExpenditureDate, "expenditureDate", c -> c.notNull())
