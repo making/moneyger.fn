@@ -27,6 +27,7 @@ import org.springframework.web.reactive.function.server.HandlerStrategies;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.server.HttpServer;
 
 import java.net.URI;
@@ -58,7 +59,7 @@ public class App {
             .build();
         final TransactionalOperator transactionalOperator = TransactionalOperator.create(new R2dbcTransactionManager(connectionFactory));
 
-        initializeDatabase(connectionFactory.getMetadata().getName(), databaseClient);
+        initializeDatabase(connectionFactory.getMetadata().getName(), databaseClient).subscribe();
 
         return staticRoutes()
             .and(new ExpenditureHandler(new R2dbcExpenditureRepository(databaseClient, transactionalOperator)).routes())
@@ -111,25 +112,24 @@ public class App {
             .build());
     }
 
-    static void initializeDatabase(String name, DatabaseClient databaseClient) {
+    public static Mono<Void> initializeDatabase(String name, DatabaseClient databaseClient) {
         if ("H2".equals(name)) {
-            databaseClient.execute()
+            return databaseClient.execute()
                 .sql("CREATE TABLE IF NOT EXISTS expenditure (expenditure_id INT PRIMARY KEY AUTO_INCREMENT, expenditure_name VARCHAR(255), unit_price INT NOT NULL, quantity INT NOT NULL, " +
                     "expenditure_date DATE NOT NULL)")
                 .then()
                 .then(databaseClient.execute()
                     .sql("CREATE TABLE IF NOT EXISTS income (income_id INT PRIMARY KEY AUTO_INCREMENT, income_name VARCHAR(255), amount INT NOT NULL, income_date DATE NOT NULL)")
-                    .then())
-                .subscribe();
+                    .then());
         } else if ("PostgreSQL".equals(name)) {
-            databaseClient.execute()
+            return databaseClient.execute()
                 .sql("CREATE TABLE IF NOT EXISTS expenditure (expenditure_id SERIAL PRIMARY KEY, expenditure_name VARCHAR(255), unit_price INT NOT NULL, quantity INT NOT NULL, " +
                     "expenditure_date DATE NOT NULL)")
                 .then()
                 .then(databaseClient.execute()
                     .sql("CREATE TABLE IF NOT EXISTS income (income_id SERIAL PRIMARY KEY, income_name VARCHAR(255), amount INT NOT NULL, income_date DATE NOT NULL)")
-                    .then())
-                .subscribe();
+                    .then());
         }
+        return Mono.error(new IllegalStateException(name + " is not supported."));
     }
 }
