@@ -212,12 +212,14 @@ class IncomeHandlerTest {
 
     @Test
     void post_400() {
-        Income income = new IncomeBuilder()
-            .withIncomeId(1000)
-            .withIncomeName("")
-            .withAmount(-1)
-            .withIncomeDate(null)
-            .build();
+        Map<String, Object> income = new LinkedHashMap<String, Object>() {
+
+            {
+                put("incomeId", 1000);
+                put("incomeName", "");
+                put("amount", -1);
+            }
+        };
 
         this.testClient.post()
             .uri("/incomes")

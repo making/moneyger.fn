@@ -225,13 +225,15 @@ class ExpenditureHandlerTest {
 
     @Test
     void post_400() {
-        Expenditure expenditure = new ExpenditureBuilder()
-            .withExpenditureId(1000)
-            .withExpenditureName("")
-            .withUnitPrice(-1)
-            .withQuantity(-1)
-            .withExpenditureDate(null)
-            .build();
+        Map<String, Object> expenditure = new LinkedHashMap<String, Object>() {
+
+            {
+                put("expenditureId", 1000);
+                put("expenditureName", "");
+                put("unitPrice", -1);
+                put("quantity", -1);
+            }
+        };
 
         this.testClient.post()
             .uri("/expenditures")
