@@ -2,18 +2,41 @@ package am.ik.handson.income;
 
 import am.ik.handson.App;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpHeaders.LOCATION;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.restdocs.cli.CliDocumentation.curlRequest;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
+import static org.springframework.restdocs.http.HttpDocumentation.httpRequest;
+import static org.springframework.restdocs.http.HttpDocumentation.httpResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
+import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
+@ExtendWith({RestDocumentationExtension.class})
 class IncomeHandlerTest {
 
     private WebTestClient testClient;
@@ -36,15 +59,18 @@ class IncomeHandlerTest {
             .withIncomeDate(LocalDate.of(2019, 4, 25))
             .createIncome());
 
-    @BeforeAll
-    void before() {
+    @BeforeEach
+    void reset(RestDocumentationContextProvider restDocumentation) {
         this.testClient = WebTestClient.bindToRouterFunction(this.incomeHandler.routes())
             .handlerStrategies(App.handlerStrategies())
+            .configureClient()
+            .filter(documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(prettyPrint())
+                .withResponseDefaults(prettyPrint())
+                .and()
+                .snippets().withDefaults(httpRequest(), httpResponse(), curlRequest()))
             .build();
-    }
-
-    @BeforeEach
-    void reset() {
         this.incomeRepository.incomes.clear();
         this.incomeRepository.incomes.addAll(this.fixtures);
         this.incomeRepository.counter.set(100);
@@ -71,13 +97,21 @@ class IncomeHandlerTest {
                 assertThat(body.get(1).get("incomeName").asText()).isEqualTo("ボーナス");
                 assertThat(body.get(1).get("amount").asInt()).isEqualTo(150000);
                 assertThat(body.get(1).get("incomeDate").asText()).isEqualTo("2019-04-25");
-            });
+            })
+            .consumeWith(
+                document("get-incomes",
+                    responseHeaders(headerWithName(CONTENT_TYPE).description(APPLICATION_JSON_VALUE)),
+                    responseFields(
+                        fieldWithPath("[].incomeId").type(JsonFieldType.NUMBER).description("The ID of the income"),
+                        fieldWithPath("[].incomeName").type(JsonFieldType.STRING).description("The name of the income"),
+                        fieldWithPath("[].amount").type(JsonFieldType.NUMBER).description("The amount price of the income"),
+                        fieldWithPath("[].incomeDate").type(JsonFieldType.STRING).description("The date of the income"))));
     }
 
     @Test
     void get_200() {
         this.testClient.get()
-            .uri("/incomes/1")
+            .uri("/incomes/{incomeId}", 1)
             .exchange()
             .expectStatus().isOk()
             .expectBody(JsonNode.class)
@@ -89,13 +123,22 @@ class IncomeHandlerTest {
                 assertThat(body.get("incomeName").asText()).isEqualTo("給与");
                 assertThat(body.get("amount").asInt()).isEqualTo(200000);
                 assertThat(body.get("incomeDate").asText()).isEqualTo("2019-04-15");
-            });
+            })
+            .consumeWith(
+                document("get-income",
+                    pathParameters(parameterWithName("incomeId").description("The ID of the income")),
+                    responseHeaders(headerWithName(CONTENT_TYPE).description(APPLICATION_JSON_VALUE)),
+                    responseFields(
+                        fieldWithPath("incomeId").type(JsonFieldType.NUMBER).description("The ID of the income"),
+                        fieldWithPath("incomeName").type(JsonFieldType.STRING).description("The name of the income"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("The amount of the income"),
+                        fieldWithPath("incomeDate").type(JsonFieldType.STRING).description("The date of the income"))));
     }
 
     @Test
     void get_404() {
         this.testClient.get()
-            .uri("/incomes/10000")
+            .uri("/incomes/{incomeId}", 10000)
             .exchange()
             .expectStatus().isNotFound()
             .expectBody(JsonNode.class)
@@ -111,12 +154,14 @@ class IncomeHandlerTest {
 
     @Test
     void post_201() {
-        Income income = new IncomeBuilder()
-            .withIncomeName("臨時収入")
-            .withAmount(250000)
-            .withIncomeDate(LocalDate.of(2019, 4, 28))
-            .createIncome();
+        Map<String, Object> income = new LinkedHashMap<String, Object>() {
 
+            {
+                put("incomeName", "臨時収入");
+                put("amount", 250000);
+                put("incomeDate", "2019-04-28");
+            }
+        };
         this.testClient.post()
             .uri("/incomes")
             .bodyValue(income)
@@ -125,18 +170,32 @@ class IncomeHandlerTest {
             .expectBody(JsonNode.class)
             .consumeWith(result -> {
                 URI location = result.getResponseHeaders().getLocation();
-                assertThat(location.toString()).isEqualTo("/incomes/100");
+                assertThat(location.toString()).endsWith("/incomes/100");
                 JsonNode body = result.getResponseBody();
                 assertThat(body).isNotNull();
 
                 assertThat(body.get("incomeId").asInt()).isEqualTo(100);
-                assertThat(body.get("incomeName").asText()).isEqualTo("臨時収入");
                 assertThat(body.get("amount").asInt()).isEqualTo(250000);
                 assertThat(body.get("incomeDate").asText()).isEqualTo("2019-04-28");
-            });
+            })
+            .consumeWith(
+                document("post-incomes",
+                    requestHeaders(headerWithName(CONTENT_TYPE).description(APPLICATION_JSON_VALUE)),
+                    requestFields(
+                        fieldWithPath("incomeName").type(JsonFieldType.STRING).description("The name of the income"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("The amount of the income"),
+                        fieldWithPath("incomeDate").type(JsonFieldType.STRING).description("The date of the income")),
+                    responseHeaders(
+                        headerWithName(CONTENT_TYPE).description(APPLICATION_JSON_VALUE),
+                        headerWithName(LOCATION).description("The URL of the income")),
+                    responseFields(
+                        fieldWithPath("incomeId").type(JsonFieldType.NUMBER).description("The ID of the income"),
+                        fieldWithPath("incomeName").type(JsonFieldType.STRING).description("The name of the income"),
+                        fieldWithPath("amount").type(JsonFieldType.NUMBER).description("The amount of the income"),
+                        fieldWithPath("incomeDate").type(JsonFieldType.STRING).description("The date of the income"))));
 
         this.testClient.get()
-            .uri("/incomes/100")
+            .uri("/incomes/{incomeId}", 100)
             .exchange()
             .expectStatus().isOk()
             .expectBody(JsonNode.class)
@@ -183,9 +242,13 @@ class IncomeHandlerTest {
     @Test
     void delete() {
         this.testClient.delete()
-            .uri("/incomes/1")
+            .uri("/incomes/{incomeId}", 1)
             .exchange()
-            .expectStatus().isNoContent();
+            .expectStatus().isNoContent()
+            .expectBody(Void.class)
+            .consumeWith(
+                document("delete-income",
+                    pathParameters(parameterWithName("incomeId").description("The ID of the income"))));
 
         this.testClient.get()
             .uri("/incomes/1")

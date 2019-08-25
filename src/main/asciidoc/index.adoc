@@ -1,0 +1,49 @@
+= Mongeyer API
+Toshiaki Maki(@making);
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+[[resources]]
+== Resources
+
+This document formats JSONs for each response to improve the readability but actual responses are not formatted.
+
+=== Expenditure
+
+==== List expenditures
+
+operation::get-expenditures[]
+
+==== Get an expenditure
+
+operation::get-expenditure[]
+
+==== Create an expenditure
+
+operation::post-expenditures[]
+
+==== Delete an expenditure
+
+operation::delete-expenditure[]
+
+=== Income
+
+==== List incomes
+
+operation::get-incomes[]
+
+==== Get an income
+
+operation::get-income[]
+
+==== Create an income
+
+operation::post-incomes[]
+
+==== Delete an income
+
+operation::delete-income[]

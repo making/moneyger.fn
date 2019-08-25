@@ -69,6 +69,7 @@ public class App {
     static RouterFunction<ServerResponse> staticRoutes() {
         return RouterFunctions.route()
             .GET("/", req -> ServerResponse.ok().bodyValue(new ClassPathResource("META-INF/resources/index.html")))
+            .resources("/docs/**", new ClassPathResource("static/docs/"))
             .resources("/**", new ClassPathResource("META-INF/resources/"))
             .filter((request, next) -> next.handle(request)
                 .flatMap(response -> ServerResponse.from(response)
@@ -106,6 +107,7 @@ public class App {
 
     static ConnectionPool connectionPool(ConnectionFactory connectionFactory) {
         return new ConnectionPool(ConnectionPoolConfiguration.builder(connectionFactory)
+            .initialSize(4)
             .maxSize(4)
             .maxIdleTime(Duration.ofSeconds(3))
             .validationQuery("SELECT 1")
