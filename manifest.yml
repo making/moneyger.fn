@@ -1,14 +1,16 @@
 applications:
-  - name: moneyger
-    path: target/moneyger-1.0-SNAPSHOT.jar
-    memory: 128m
-    env:
-      JAVA_OPTS: '-XX:ReservedCodeCacheSize=22M -XX:MaxDirectMemorySize=22M -XX:MaxMetaspaceSize=54M -Xss512K'
-      JBP_CONFIG_OPEN_JDK_JRE: '[memory_calculator: {stack_threads: 30}]'
-    services:
-      # cf create-service elephantsql turtle moneyger-db
-      # cf create-user-provided-service moneyger-db -p '{"uri":"postgres://username:password@hostname:5432/dbnane"}'
-      - moneyger-db
-    health-check-type: http
-    health-check-http-endpoint: /
-    timeout: 30
+- name: moneyger
+  instances: 1
+  path: target/moneyger-1.0-SNAPSHOT.jar
+  memory: 128m
+  env:
+    JAVA_OPTS: '-XX:ReservedCodeCacheSize=22M -XX:MaxDirectMemorySize=22M -XX:MaxMetaspaceSize=54M -Xss512K'
+    JBP_CONFIG_OPEN_JDK_JRE: '[memory_calculator: {stack_threads: 30}]'
+  services:
+  # cf create-service elephantsql turtle moneyger-db
+  # or
+  # cf create-user-provided-service moneyger-db -p '{"uri":"postgres://username:password@hostname:5432/dbnane"}'
+  - moneyger-db
+  health-check-type: http
+  health-check-http-endpoint: /
+  timeout: 30

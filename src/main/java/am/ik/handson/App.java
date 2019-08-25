@@ -70,6 +70,7 @@ public class App {
         return RouterFunctions.route()
             .GET("/", req -> ServerResponse.ok().bodyValue(new ClassPathResource("META-INF/resources/index.html")))
             .resources("/docs/**", new ClassPathResource("static/docs/"))
+            .resources("/webjars/**", new ClassPathResource("META-INF/resources/webjars/"))
             .resources("/**", new ClassPathResource("META-INF/resources/"))
             .filter((request, next) -> next.handle(request)
                 .flatMap(response -> ServerResponse.from(response)
