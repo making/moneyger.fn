@@ -37,17 +37,17 @@ public class IncomeHandler {
         return req.bodyToMono(Income.class)
             .flatMap(income -> income.validate()
                 .bimap(v -> new ErrorResponseBuilder().withStatus(BAD_REQUEST).withDetails(v).createErrorResponse(), this.incomeRepository::save)
-                .fold(error -> ServerResponse.badRequest().syncBody(error),
+                .fold(error -> ServerResponse.badRequest().bodyValue(error),
                     result -> result.flatMap(created -> ServerResponse
                         .created(UriComponentsBuilder.fromUri(req.uri()).path("/{incomeId}").build(created.getIncomeId()))
-                        .syncBody(created))));
+                        .bodyValue(created))));
     }
 
     Mono<ServerResponse> get(ServerRequest req) {
         return this.incomeRepository.findById(Integer.valueOf(req.pathVariable("incomeId")))
-            .flatMap(income -> ServerResponse.ok().syncBody(income))
+            .flatMap(income -> ServerResponse.ok().bodyValue(income))
             .switchIfEmpty(ServerResponse.status(NOT_FOUND)
-                .syncBody(new ErrorResponseBuilder()
+                .bodyValue(new ErrorResponseBuilder()
                     .withMessage("The given income is not found.")
                     .withStatus(NOT_FOUND)
                     .createErrorResponse()));

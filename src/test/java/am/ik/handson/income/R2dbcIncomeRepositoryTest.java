@@ -51,8 +51,7 @@ class R2dbcIncomeRepositoryTest {
 
     @BeforeEach
     void each() throws Exception {
-        this.databaseClient.execute()
-            .sql("TRUNCATE TABLE income")
+        this.databaseClient.execute("TRUNCATE TABLE income")
             .then()
             .thenMany(Flux.fromIterable(this.fixtures)
                 .flatMap(income -> this.databaseClient.insert()
@@ -83,8 +82,7 @@ class R2dbcIncomeRepositoryTest {
 
     @Test
     void findById() {
-        Integer incomeId = this.databaseClient.execute()
-            .sql("SELECT income_id FROM income WHERE income_name = :income_name")
+        Integer incomeId = this.databaseClient.execute("SELECT income_id FROM income WHERE income_name = :income_name")
             .bind("income_name", "給与")
             .map((row, rowMetadata) -> row.get("income_id", Integer.class))
             .one()
@@ -102,8 +100,7 @@ class R2dbcIncomeRepositoryTest {
 
     @Test
     void findById_Empty() {
-        Integer latestId = this.databaseClient.execute()
-            .sql("SELECT MAX(income_id) AS max FROM income")
+        Integer latestId = this.databaseClient.execute("SELECT MAX(income_id) AS max FROM income")
             .map((row, rowMetadata) -> row.get("max", Integer.class))
             .one()
             .block();
@@ -114,8 +111,7 @@ class R2dbcIncomeRepositoryTest {
 
     @Test
     void save() {
-        Integer latestId = this.databaseClient.execute()
-            .sql("SELECT MAX(income_id) AS max FROM income")
+        Integer latestId = this.databaseClient.execute("SELECT MAX(income_id) AS max FROM income")
             .map((row, rowMetadata) -> row.get("max", Integer.class))
             .one()
             .block();
@@ -138,8 +134,7 @@ class R2dbcIncomeRepositoryTest {
 
     @Test
     void deleteById() {
-        Integer incomeId = this.databaseClient.execute()
-            .sql("SELECT income_id FROM income WHERE income_name = :income_name")
+        Integer incomeId = this.databaseClient.execute("SELECT income_id FROM income WHERE income_name = :income_name")
             .bind("income_name", "給与")
             .map((row, rowMetadata) -> row.get("income_id", Integer.class))
             .one()

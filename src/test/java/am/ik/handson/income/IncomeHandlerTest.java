@@ -119,7 +119,7 @@ class IncomeHandlerTest {
 
         this.testClient.post()
             .uri("/incomes")
-            .syncBody(income)
+            .bodyValue(income)
             .exchange()
             .expectStatus().isCreated()
             .expectBody(JsonNode.class)
@@ -162,7 +162,7 @@ class IncomeHandlerTest {
 
         this.testClient.post()
             .uri("/incomes")
-            .syncBody(income)
+            .bodyValue(income)
             .exchange()
             .expectStatus().isBadRequest()
             .expectBody(JsonNode.class)

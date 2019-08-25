@@ -68,7 +68,7 @@ public class App {
 
     static RouterFunction<ServerResponse> staticRoutes() {
         return RouterFunctions.route()
-            .GET("/", req -> ServerResponse.ok().syncBody(new ClassPathResource("META-INF/resources/index.html")))
+            .GET("/", req -> ServerResponse.ok().bodyValue(new ClassPathResource("META-INF/resources/index.html")))
             .resources("/**", new ClassPathResource("META-INF/resources/"))
             .filter((request, next) -> next.handle(request)
                 .flatMap(response -> ServerResponse.from(response)
@@ -114,20 +114,17 @@ public class App {
 
     public static Mono<Void> initializeDatabase(String name, DatabaseClient databaseClient) {
         if ("H2".equals(name)) {
-            return databaseClient.execute()
-                .sql("CREATE TABLE IF NOT EXISTS expenditure (expenditure_id INT PRIMARY KEY AUTO_INCREMENT, expenditure_name VARCHAR(255), unit_price INT NOT NULL, quantity INT NOT NULL, " +
-                    "expenditure_date DATE NOT NULL)")
+            return databaseClient.execute("CREATE TABLE IF NOT EXISTS expenditure (expenditure_id INT PRIMARY KEY AUTO_INCREMENT, expenditure_name VARCHAR(255), unit_price INT NOT NULL, quantity " +
+                "INT NOT NULL, " +
+                "expenditure_date DATE NOT NULL)")
                 .then()
-                .then(databaseClient.execute()
-                    .sql("CREATE TABLE IF NOT EXISTS income (income_id INT PRIMARY KEY AUTO_INCREMENT, income_name VARCHAR(255), amount INT NOT NULL, income_date DATE NOT NULL)")
+                .then(databaseClient.execute("CREATE TABLE IF NOT EXISTS income (income_id INT PRIMARY KEY AUTO_INCREMENT, income_name VARCHAR(255), amount INT NOT NULL, income_date DATE NOT NULL)")
                     .then());
         } else if ("PostgreSQL".equals(name)) {
-            return databaseClient.execute()
-                .sql("CREATE TABLE IF NOT EXISTS expenditure (expenditure_id SERIAL PRIMARY KEY, expenditure_name VARCHAR(255), unit_price INT NOT NULL, quantity INT NOT NULL, " +
-                    "expenditure_date DATE NOT NULL)")
+            return databaseClient.execute("CREATE TABLE IF NOT EXISTS expenditure (expenditure_id SERIAL PRIMARY KEY, expenditure_name VARCHAR(255), unit_price INT NOT NULL, quantity INT NOT NULL, " +
+                "expenditure_date DATE NOT NULL)")
                 .then()
-                .then(databaseClient.execute()
-                    .sql("CREATE TABLE IF NOT EXISTS income (income_id SERIAL PRIMARY KEY, income_name VARCHAR(255), amount INT NOT NULL, income_date DATE NOT NULL)")
+                .then(databaseClient.execute("CREATE TABLE IF NOT EXISTS income (income_id SERIAL PRIMARY KEY, income_name VARCHAR(255), amount INT NOT NULL, income_date DATE NOT NULL)")
                     .then());
         }
         return Mono.error(new IllegalStateException(name + " is not supported."));

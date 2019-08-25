@@ -125,7 +125,7 @@ class ExpenditureHandlerTest {
 
         this.testClient.post()
             .uri("/expenditures")
-            .syncBody(expenditure)
+            .bodyValue(expenditure)
             .exchange()
             .expectStatus().isCreated()
             .expectBody(JsonNode.class)
@@ -171,7 +171,7 @@ class ExpenditureHandlerTest {
 
         this.testClient.post()
             .uri("/expenditures")
-            .syncBody(expenditure)
+            .bodyValue(expenditure)
             .exchange()
             .expectStatus().isBadRequest()
             .expectBody(JsonNode.class)

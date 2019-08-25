@@ -53,8 +53,7 @@ class R2dbcExpenditureRepositoryTest {
 
     @BeforeEach
     void each() throws Exception {
-        this.databaseClient.execute()
-            .sql("TRUNCATE TABLE expenditure")
+        this.databaseClient.execute("TRUNCATE TABLE expenditure")
             .then()
             .thenMany(Flux.fromIterable(this.fixtures)
                 .flatMap(expenditure -> this.databaseClient.insert()
@@ -87,8 +86,7 @@ class R2dbcExpenditureRepositoryTest {
 
     @Test
     void findById() {
-        Integer expenditureId = this.databaseClient.execute()
-            .sql("SELECT expenditure_id FROM expenditure WHERE expenditure_name = :expenditure_name")
+        Integer expenditureId = this.databaseClient.execute("SELECT expenditure_id FROM expenditure WHERE expenditure_name = :expenditure_name")
             .bind("expenditure_name", "本")
             .map((row, rowMetadata) -> row.get("expenditure_id", Integer.class))
             .one()
@@ -107,8 +105,7 @@ class R2dbcExpenditureRepositoryTest {
 
     @Test
     void findById_Empty() {
-        Integer latestId = this.databaseClient.execute()
-            .sql("SELECT MAX(expenditure_id) AS max FROM expenditure")
+        Integer latestId = this.databaseClient.execute("SELECT MAX(expenditure_id) AS max FROM expenditure")
             .map((row, rowMetadata) -> row.get("max", Integer.class))
             .one()
             .block();
@@ -119,8 +116,7 @@ class R2dbcExpenditureRepositoryTest {
 
     @Test
     void save() {
-        Integer latestId = this.databaseClient.execute()
-            .sql("SELECT MAX(expenditure_id) AS max FROM expenditure")
+        Integer latestId = this.databaseClient.execute("SELECT MAX(expenditure_id) AS max FROM expenditure")
             .map((row, rowMetadata) -> row.get("max", Integer.class))
             .one()
             .block();
@@ -145,8 +141,7 @@ class R2dbcExpenditureRepositoryTest {
 
     @Test
     void deleteById() {
-        Integer expenditureId = this.databaseClient.execute()
-            .sql("SELECT expenditure_id FROM expenditure WHERE expenditure_name = :expenditure_name")
+        Integer expenditureId = this.databaseClient.execute("SELECT expenditure_id FROM expenditure WHERE expenditure_name = :expenditure_name")
             .bind("expenditure_name", "本")
             .map((row, rowMetadata) -> row.get("expenditure_id", Integer.class))
             .one()
