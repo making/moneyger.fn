@@ -30,7 +30,6 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.server.HttpServer;
 
-import java.net.URI;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -98,12 +97,7 @@ public class App {
     static ConnectionFactory connectionFactory() {
         // postgresql://username:password@hostname:5432/dbname
         String databaseUrl = Optional.ofNullable(System.getenv("DATABASE_URL")).orElse("h2:file:///./target/demo?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
-        return ConnectionFactories.get("r2dbc:" + url(databaseUrl));
-    }
-
-    static String url(String databaseUrl) {
-        URI uri = URI.create(databaseUrl);
-        return ("postgres".equals(uri.getScheme()) ? databaseUrl.replace("postgres", "postgresql") : databaseUrl);
+        return ConnectionFactories.get("r2dbc:" + databaseUrl);
     }
 
     static ConnectionPool connectionPool(ConnectionFactory connectionFactory) {
