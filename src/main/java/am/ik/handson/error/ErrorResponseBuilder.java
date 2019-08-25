@@ -19,7 +19,7 @@ public class ErrorResponseBuilder {
 
     private int status;
 
-    public ErrorResponse createErrorResponse() {
+    public ErrorResponse build() {
         return new ErrorResponse(status, error, message, details);
     }
 

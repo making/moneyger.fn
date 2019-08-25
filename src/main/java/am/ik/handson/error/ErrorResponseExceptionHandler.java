@@ -47,7 +47,7 @@ public class ErrorResponseExceptionHandler implements WebExceptionHandler {
             .bodyValue(new ErrorResponseBuilder()
                 .withStatus(status)
                 .withMessage(ex.getMessage())
-                .createErrorResponse())
+                .build())
             .flatMap(response -> response.writeTo(exchange, this.context));
     }
 }

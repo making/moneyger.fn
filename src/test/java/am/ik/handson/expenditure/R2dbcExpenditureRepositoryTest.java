@@ -32,13 +32,13 @@ class R2dbcExpenditureRepositoryTest {
             .withUnitPrice(2000)
             .withQuantity(1)
             .withExpenditureDate(LocalDate.of(2019, 4, 1))
-            .createExpenditure(),
+            .build(),
         new ExpenditureBuilder()
             .withExpenditureName("コーヒー")
             .withUnitPrice(300)
             .withQuantity(2)
             .withExpenditureDate(LocalDate.of(2019, 4, 2))
-            .createExpenditure());
+            .build());
 
     @BeforeAll
     void init() {
@@ -126,7 +126,7 @@ class R2dbcExpenditureRepositoryTest {
             .withUnitPrice(250)
             .withQuantity(1)
             .withExpenditureDate(LocalDate.of(2019, 4, 3))
-            .createExpenditure();
+            .build();
 
         StepVerifier.create(this.expenditureRepository.save(create))
             .consumeNextWith(expenditure -> {

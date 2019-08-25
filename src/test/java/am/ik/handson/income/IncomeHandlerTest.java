@@ -51,13 +51,13 @@ class IncomeHandlerTest {
             .withIncomeName("給与")
             .withAmount(200000)
             .withIncomeDate(LocalDate.of(2019, 4, 15))
-            .createIncome(),
+            .build(),
         new IncomeBuilder()
             .withIncomeId(2)
             .withIncomeName("ボーナス")
             .withAmount(150000)
             .withIncomeDate(LocalDate.of(2019, 4, 25))
-            .createIncome());
+            .build());
 
     @BeforeEach
     void reset(RestDocumentationContextProvider restDocumentation) {
@@ -217,7 +217,7 @@ class IncomeHandlerTest {
             .withIncomeName("")
             .withAmount(-1)
             .withIncomeDate(null)
-            .createIncome();
+            .build();
 
         this.testClient.post()
             .uri("/incomes")

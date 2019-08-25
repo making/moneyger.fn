@@ -31,7 +31,7 @@ public class InMemoryExpenditureRepository implements ExpenditureRepository {
         return Mono.fromCallable(() -> {
             Expenditure created = new ExpenditureBuilder(expenditure)
                 .withExpenditureId(this.counter.getAndIncrement())
-                .createExpenditure();
+                .build();
             this.expenditures.add(created);
             return created;
         });

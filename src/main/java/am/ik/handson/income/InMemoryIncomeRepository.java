@@ -31,7 +31,7 @@ public class InMemoryIncomeRepository implements IncomeRepository {
         return Mono.fromCallable(() -> {
             Income created = new IncomeBuilder(income)
                 .withIncomeId(this.counter.getAndIncrement())
-                .createIncome();
+                .build();
             this.incomes.add(created);
             return created;
         });

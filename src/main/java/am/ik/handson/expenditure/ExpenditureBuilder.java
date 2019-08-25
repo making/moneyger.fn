@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 import java.time.LocalDate;
 
-@JsonPOJOBuilder(buildMethodName = "createExpenditure")
+@JsonPOJOBuilder
 public class ExpenditureBuilder {
 
     private int unitPrice;
@@ -28,7 +28,7 @@ public class ExpenditureBuilder {
         this.quantity = expenditure.getQuantity();
     }
 
-    public Expenditure createExpenditure() {
+    public Expenditure build() {
         return new Expenditure(expenditureId, expenditureName, unitPrice, quantity, expenditureDate);
     }
 

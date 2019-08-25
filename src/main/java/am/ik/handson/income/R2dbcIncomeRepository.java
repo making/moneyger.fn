@@ -41,7 +41,7 @@ public class R2dbcIncomeRepository implements IncomeRepository {
             .one()
             .map(map -> new IncomeBuilder(income)
                 .withIncomeId((Integer) map.get("income_id"))
-                .createIncome())
+                .build())
             .as(this.tx::transactional);
     }
 

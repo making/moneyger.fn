@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 import java.time.LocalDate;
 
-@JsonPOJOBuilder(buildMethodName = "createIncome")
+@JsonPOJOBuilder
 public class IncomeBuilder {
 
     private int amount;
@@ -25,7 +25,7 @@ public class IncomeBuilder {
         this.incomeName = income.getIncomeName();
     }
 
-    public Income createIncome() {
+    public Income build() {
         return new Income(incomeId, incomeName, amount, incomeDate);
     }
 

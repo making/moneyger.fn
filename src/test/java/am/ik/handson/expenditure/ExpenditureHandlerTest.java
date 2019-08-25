@@ -52,14 +52,14 @@ class ExpenditureHandlerTest {
             .withUnitPrice(2000)
             .withQuantity(1)
             .withExpenditureDate(LocalDate.of(2019, 4, 1))
-            .createExpenditure(),
+            .build(),
         new ExpenditureBuilder()
             .withExpenditureId(2)
             .withExpenditureName("コーヒー")
             .withUnitPrice(300)
             .withQuantity(2)
             .withExpenditureDate(LocalDate.of(2019, 4, 2))
-            .createExpenditure());
+            .build());
 
     @BeforeEach
     void reset(RestDocumentationContextProvider restDocumentation) {
@@ -231,7 +231,7 @@ class ExpenditureHandlerTest {
             .withUnitPrice(-1)
             .withQuantity(-1)
             .withExpenditureDate(null)
-            .createExpenditure();
+            .build();
 
         this.testClient.post()
             .uri("/expenditures")

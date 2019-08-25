@@ -36,7 +36,7 @@ public class ExpenditureHandler {
     Mono<ServerResponse> post(ServerRequest req) {
         return req.bodyToMono(Expenditure.class)
             .flatMap(expenditure -> expenditure.validate()
-                .bimap(v -> new ErrorResponseBuilder().withStatus(BAD_REQUEST).withDetails(v).createErrorResponse(), this.expenditureRepository::save)
+                .bimap(v -> new ErrorResponseBuilder().withStatus(BAD_REQUEST).withDetails(v).build(), this.expenditureRepository::save)
                 .fold(error -> ServerResponse.badRequest().bodyValue(error),
                     result -> result.flatMap(created -> ServerResponse
                         .created(UriComponentsBuilder.fromUri(req.uri()).path("/{expenditureId}").build(created.getExpenditureId()))
@@ -50,7 +50,7 @@ public class ExpenditureHandler {
                 .bodyValue(new ErrorResponseBuilder()
                     .withMessage("The given expenditure is not found.")
                     .withStatus(NOT_FOUND)
-                    .createErrorResponse())));
+                    .build())));
     }
 
     Mono<ServerResponse> delete(ServerRequest req) {

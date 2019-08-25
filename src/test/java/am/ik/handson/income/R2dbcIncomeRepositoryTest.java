@@ -31,12 +31,12 @@ class R2dbcIncomeRepositoryTest {
             .withIncomeName("給与")
             .withAmount(200000)
             .withIncomeDate(LocalDate.of(2019, 4, 15))
-            .createIncome(),
+            .build(),
         new IncomeBuilder()
             .withIncomeName("ボーナス")
             .withAmount(150000)
             .withIncomeDate(LocalDate.of(2019, 4, 25))
-            .createIncome());
+            .build());
 
     @BeforeAll
     void init() {
@@ -120,7 +120,7 @@ class R2dbcIncomeRepositoryTest {
             .withIncomeName("印税")
             .withAmount(80000)
             .withIncomeDate(LocalDate.of(2019, 4, 30))
-            .createIncome();
+            .build();
 
         StepVerifier.create(this.incomeRepository.save(create))
             .consumeNextWith(income -> {

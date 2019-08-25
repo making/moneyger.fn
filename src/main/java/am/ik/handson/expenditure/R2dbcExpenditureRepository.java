@@ -41,7 +41,7 @@ public class R2dbcExpenditureRepository implements ExpenditureRepository {
             .one()
             .map(map -> new ExpenditureBuilder(expenditure)
                 .withExpenditureId((Integer) map.get("expenditure_id"))
-                .createExpenditure())
+                .build())
             .as(this.tx::transactional);
     }
 
