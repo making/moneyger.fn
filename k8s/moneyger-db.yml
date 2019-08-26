@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: moneyger-db
+  namespace: moneyger
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moneyger-db
+  namespace: moneyger
+spec:
+  selector:
+    matchLabels:
+      app: moneyger-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: moneyger-db
+    spec:
+      initContainers:
+      - name: remove-lost-found
+        image: busybox
+        command:          
+        - sh
+        - -c
+        - |
+          rm -fr /var/lib/postgresql/data/lost+found
+        volumeMounts:
+        - name: moneyger-db
+          mountPath: /var/lib/postgresql/data
+      containers:
+      - image: postgres:11.5
+        name: postgres
+        env:
+        - name: POSTGRES_INITDB_ARGS
+          value: "--encoding=UTF-8 --locale=C"
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: moneyger-db
+              key: postgres-db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: moneyger-db
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moneyger-db
+              key: postgres-password
+        ports:
+        - containerPort: 5432
+          name: moneyger-db
+        volumeMounts:
+        - name: moneyger-db
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: moneyger-db
+        persistentVolumeClaim:
+          claimName: moneyger-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moneyger-db
+  namespace: moneyger
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: moneyger-db
+  clusterIP: None
+
+# kubectl run -it --rm --image=postgres:11.5 --generator=run-pod/v1 --restart=Never --env="PGPASSWORD=moneyger" psql -- psql -h moneyger-db.moneyger.svc.cluster.local -U moneyger -d moneyger
+
