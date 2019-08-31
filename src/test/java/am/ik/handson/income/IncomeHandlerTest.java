@@ -1,6 +1,6 @@
 package am.ik.handson.income;
 
-import am.ik.handson.App;
+import am.ik.handson.config.RouteConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ class IncomeHandlerTest {
     @BeforeEach
     void reset(RestDocumentationContextProvider restDocumentation) {
         this.testClient = WebTestClient.bindToRouterFunction(this.incomeHandler.routes())
-            .handlerStrategies(App.handlerStrategies())
+            .handlerStrategies(RouteConfig.handlerStrategies())
             .configureClient()
             .filter(documentationConfiguration(restDocumentation)
                 .operationPreprocessors()

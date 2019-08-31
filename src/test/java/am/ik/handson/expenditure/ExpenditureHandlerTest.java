@@ -1,6 +1,6 @@
 package am.ik.handson.expenditure;
 
-import am.ik.handson.App;
+import am.ik.handson.config.RouteConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,7 +64,7 @@ class ExpenditureHandlerTest {
     @BeforeEach
     void reset(RestDocumentationContextProvider restDocumentation) {
         this.testClient = WebTestClient.bindToRouterFunction(this.expenditureHandler.routes())
-            .handlerStrategies(App.handlerStrategies())
+            .handlerStrategies(RouteConfig.handlerStrategies())
             .configureClient()
             .filter(documentationConfiguration(restDocumentation)
                 .operationPreprocessors()

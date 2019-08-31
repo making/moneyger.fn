@@ -1,6 +1,6 @@
 package am.ik.handson.expenditure;
 
-import am.ik.handson.App;
+import am.ik.handson.config.R2dbcConfig;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -48,7 +48,7 @@ class R2dbcExpenditureRepositoryTest {
             .build();
         this.transactionalOperator = TransactionalOperator.create(new R2dbcTransactionManager(connectionFactory));
         this.expenditureRepository = new R2dbcExpenditureRepository(this.databaseClient, transactionalOperator);
-        App.initializeDatabase("H2", this.databaseClient).block();
+        R2dbcConfig.initializeDatabase("H2", this.databaseClient).block();
     }
 
     @BeforeEach
