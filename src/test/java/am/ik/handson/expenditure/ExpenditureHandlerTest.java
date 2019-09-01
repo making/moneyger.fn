@@ -1,14 +1,21 @@
 package am.ik.handson.expenditure;
 
-import am.ik.handson.config.RouteConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.server.RouterFunction;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -37,13 +44,32 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
 @ExtendWith({RestDocumentationExtension.class})
+@WebFluxTest
+@Import(ExpenditureHandler.class)
 class ExpenditureHandlerTest {
+
+    @Configuration
+    static class Config {
+
+        @Bean
+        public RouterFunction<?> routes(ExpenditureHandler expenditureHandler) {
+            return expenditureHandler.routes();
+        }
+
+        @Bean
+        @Primary
+        public ExpenditureRepository expenditureRepository() {
+            return new InMemoryExpenditureRepository();
+        }
+    }
 
     private WebTestClient testClient;
 
-    private InMemoryExpenditureRepository expenditureRepository = new InMemoryExpenditureRepository();
+    @Autowired
+    private ApplicationContext applicationContext;
 
-    private ExpenditureHandler expenditureHandler = new ExpenditureHandler(this.expenditureRepository);
+    @Autowired
+    private InMemoryExpenditureRepository expenditureRepository;
 
     private List<Expenditure> fixtures = Arrays.asList(
         new ExpenditureBuilder()
@@ -63,8 +89,7 @@ class ExpenditureHandlerTest {
 
     @BeforeEach
     void reset(RestDocumentationContextProvider restDocumentation) {
-        this.testClient = WebTestClient.bindToRouterFunction(this.expenditureHandler.routes())
-            .handlerStrategies(RouteConfig.handlerStrategies())
+        this.testClient = WebTestClient.bindToApplicationContext(applicationContext)
             .configureClient()
             .filter(documentationConfiguration(restDocumentation)
                 .operationPreprocessors()

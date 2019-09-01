@@ -1,14 +1,21 @@
 package am.ik.handson.income;
 
-import am.ik.handson.config.RouteConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.server.RouterFunction;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -37,13 +44,32 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
 
 @ExtendWith({RestDocumentationExtension.class})
+@WebFluxTest
+@Import(IncomeHandler.class)
 class IncomeHandlerTest {
+
+    @Configuration
+    static class Config {
+
+        @Bean
+        public RouterFunction<?> routes(IncomeHandler incomeHandler) {
+            return incomeHandler.routes();
+        }
+
+        @Bean
+        @Primary
+        public IncomeRepository incomeRepository() {
+            return new InMemoryIncomeRepository();
+        }
+    }
 
     private WebTestClient testClient;
 
-    private InMemoryIncomeRepository incomeRepository = new InMemoryIncomeRepository();
+    @Autowired
+    private InMemoryIncomeRepository incomeRepository;
 
-    private IncomeHandler incomeHandler = new IncomeHandler(this.incomeRepository);
+    @Autowired
+    private ApplicationContext applicationContext;
 
     private List<Income> fixtures = Arrays.asList(
         new IncomeBuilder()
@@ -61,8 +87,7 @@ class IncomeHandlerTest {
 
     @BeforeEach
     void reset(RestDocumentationContextProvider restDocumentation) {
-        this.testClient = WebTestClient.bindToRouterFunction(this.incomeHandler.routes())
-            .handlerStrategies(RouteConfig.handlerStrategies())
+        this.testClient = WebTestClient.bindToApplicationContext(applicationContext)
             .configureClient()
             .filter(documentationConfiguration(restDocumentation)
                 .operationPreprocessors()
