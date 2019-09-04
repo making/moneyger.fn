@@ -1,0 +1,27 @@
+[
+  {
+    "name": "am.ik.handson.expenditure.Expenditure",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "am.ik.handson.expenditure.ExpenditureBuilder",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "am.ik.handson.income.Income",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "am.ik.handson.income.IncomeBuilder",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "am.ik.handson.error.ErrorResponse",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  }
+]

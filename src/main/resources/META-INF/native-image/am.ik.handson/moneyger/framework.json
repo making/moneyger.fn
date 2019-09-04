@@ -1,0 +1,31 @@
+[
+  {
+    "name": "org.springframework.http.codec.support.DefaultServerCodecConfigurer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "io.r2dbc.h2.H2ConnectionFactoryProvider",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "io.r2dbc.postgresql.PostgresqlConnectionFactoryProvider",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "io.r2dbc.pool.PoolingConnectionFactoryProvider",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.h2.mvstore.db.MVTableEngine",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true
+  }
+]
